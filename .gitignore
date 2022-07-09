@@ -1,0 +1,8 @@
+**__pycache__/**
+__pycache__/
+virtual_documents/
+virtual_environments/
+.ipynb_checkpoints/
+ipynb_checkpoints/
+
+.idea/
