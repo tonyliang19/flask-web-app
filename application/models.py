@@ -1,4 +1,3 @@
-from tabnanny import check
 import flask
 from application import db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,13 +7,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Use a class to represent a user and maps this to db
 class User(db.Document):
     # Assert every user id is unique
-    user_id = db.IntField(unique=True)
+    user_id     = db.IntField(unique=True)
     # You could change the length to other
-    first_name = db.StringField(max_length=50)
-    last_name = db.StringField(max_length=50)
-    email = db.StringField(max_length=30, unique=True)
+    first_name  = db.StringField(max_length=50)
+    last_name   = db.StringField(max_length=50)
+    email       = db.StringField(max_length=30, unique=True)
     # Length of password would then set to 128 or more, since hash is long        
-    password = db.StringField( )
+    password    = db.StringField( )
     # This generates unique hash value for password of the use
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -29,12 +28,12 @@ class User(db.Document):
 
 class Course(db.Document):
     # Assert every user id is unique
-    course_id = db.StringField(max_length = 10, unique=True)
+    course_id   = db.StringField(max_length = 10, unique=True)
     # You could change the length to other
-    title = db.StringField(max_length=100)
+    title       = db.StringField(max_length=100)
     description = db.StringField(max_length=255)
-    credits = db.IntField()
-    term = db.StringField(max_length=25)
+    credits     = db.IntField()
+    term        = db.StringField(max_length=25)
 
 
 # Junction table, many-to-many relationships

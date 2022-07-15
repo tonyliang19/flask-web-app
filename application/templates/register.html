@@ -22,6 +22,14 @@
             </p>
 
             <p>
+                {{ form.password_confirm.label }}<br>
+                {{ form.password_confirm(size=35) }}
+                {% for error in form.password_confirm.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </p>
+
+            <p>
                 {{ form.first_name.label }}<br>
                 {{ form.first_name }}
                 {% for error in form.first_name.errors %}

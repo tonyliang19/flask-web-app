@@ -1,7 +1,7 @@
 # This serves as file that stores every route to each sub link
 
 from application import app, db
-from flask import render_template, request, json, Response, redirect, flash
+from flask import render_template, request, json, Response, redirect, flash, url_for
 from application.forms import LoginForm, RegisterForm
 from application.models import User, Course, Enrollment
 
@@ -49,13 +49,32 @@ def login():
 
         # This user is from the database
         user = User.objects(email=email).first()
-        if user and password == user.password:
+        if user and password == user.get_password(password):
         # These prints to the page
             flash(f"{user.first_name} You are sucessfully logged in!", category="success")
-            return redirect("/index")
+            return redirect(url_for("index"))
         else:
             flash("Sorry, something went wrong", category="danger")
     return render_template("login.html", title="Login", form=form, login=True)
+
+@app.route("/register", methods=["POST", "GET"])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user_id  = User.objects.count()
+        user_id  += 1
+        email = form.email.data
+        password = form.password.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+
+        # Creates the model User to be store to db
+        user = User(user_id=user_id, email=email, first_name=first_name, last_name=last_name)
+        user.set_password(password)
+        user.save()
+        flash("You are successfully registered!", category="success")
+        return redirect(url_for("index"))
+    return render_template("register.html", title="Register", form=form, register=True)
 
 @app.route("/courses")
 # "/base_pattern/<variable>"
@@ -65,12 +84,6 @@ def login():
 @app.route("/courses/<term>")
 def courses(term="Summer 2022"):
     return render_template("courses.html", courseData=courseData, courses=True, term=term)
-
-@app.route("/register")
-def register():
-    form = RegisterForm()
-
-    return render_template("register.html", title="New User Registration", form=form, register=True)
 
 
 @app.route("/enrollment", methods=["GET","POST"])
