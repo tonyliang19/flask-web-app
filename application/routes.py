@@ -1,6 +1,6 @@
 # This serves as file that stores every route to each sub link
 
-from application import app, db
+from application import app
 from flask import render_template, request, json, Response, redirect, flash, url_for
 from application.forms import LoginForm, RegisterForm
 from application.models import User, Course, Enrollment
@@ -69,9 +69,9 @@ def register():
         last_name = form.last_name.data
 
         # Creates the model User to be store to db
-        user = User(user_id=user_id, email=email, first_name=first_name, last_name=last_name)
-        user.set_password(password)
-        user.save()
+        new_user = User(user_id=user_id, email=email, first_name=first_name, last_name=last_name)
+        new_user.set_password(password)
+        new_user.save()
         flash("You are successfully registered!", category="success")
         return redirect(url_for("index"))
     return render_template("register.html", title="Register", form=form, register=True)
@@ -114,10 +114,10 @@ def api(idx=None):
 @app.route("/user")
 def user():
     # .save() requires in order to be properly saved
-    #User(user_id=1, first_name="Tony", last_name="Liang", email="chunqingliang@gmail.com", 
-    #password="1234").save()
-    #User(user_id=2, first_name="Stella", last_name="Xu", email="jinghanx.0565@gmail.com",
-    #password="1234").save()
+    # User(user_id=1, first_name="Tony", last_name="Liang", email="chunqingliang@gmail.com", 
+    # password="1234").save()
+    # User(user_id=2, first_name="Stella", last_name="Xu", email="jinghanx.0565@gmail.com",
+    # password="1234").save()
 
     # Get variable back from the db to template
     users = User.objects.all()
