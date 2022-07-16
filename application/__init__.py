@@ -1,4 +1,3 @@
-from email.headerregistry import ContentTransferEncodingHeader
 from flask import Flask
 from config import Config
 from flask_mongoengine import MongoEngine

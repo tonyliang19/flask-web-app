@@ -17,11 +17,11 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     # Add validators to state some field is REQUIRED to submit
     email = StringField("Email", validators=[DataRequired(), Email()])
-    password = PasswordField("Password", validators=[DataRequired(), Length(min=6, max=15)])
+    password = PasswordField("Password", validators=[DataRequired(), Length(min=1, max=15)])
     # EqualTo requires it to match the variable "password"
     password_confirm = PasswordField("Confirm Password", 
                                     validators=[DataRequired(),
-                                    Length(min=6, max=15),EqualTo("password")])
+                                    Length(min=1, max=15),EqualTo('password')])
     first_name = StringField("First Name", validators=[DataRequired(), Length(min=2, max=55)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(min=2, max=55)])
     submit = SubmitField("Register Now")

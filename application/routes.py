@@ -1,9 +1,9 @@
 # This serves as file that stores every route to each sub link
 
-from application import app
+from application import app, db
 from flask import render_template, request, json, Response, redirect, flash, url_for
 from application.forms import LoginForm, RegisterForm
-from application.models import User, Course, Enrollment
+from application.models import User#, Course, Enrollment
 
 # Global data
 
@@ -36,53 +36,55 @@ courseData= [{"courseID":"1","title":"DSCI 100","description":"Intro to Data Sci
 # function_name = True to highlight active 
 # index = True
 def index():
-    return render_template("index.html", login=False, index=True)
+    return render_template("index.html", index=True)
 
-@app.route("/login", methods=["GET", "POST"])
-# login=True
+@app.route("/register", methods=['POST','GET'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user_id     = User.objects.count()
+        user_id     += 1
+
+        email       = form.email.data
+        password    = form.password.data
+        first_name  = form.first_name.data
+        last_name   = form.last_name.data
+        # Creates the model User to be store to db
+        user = User(user_id=user_id, email=email, first_name=first_name, last_name=last_name)
+        user.set_password(password)
+        user.save()
+        flash("You are successfully registered!","success")
+        return redirect(url_for('index'))
+    return render_template("register.html", title="Register", form=form, register=True)
+
+
+@app.route("/login", methods=['GET','POST'])
 def login():
     form = LoginForm()
     # if form has no errors
     if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-
+        email       = form.email.data
+        password    = form.password.data
         # This user is from the database
         user = User.objects(email=email).first()
-        if user and password == user.get_password(password):
+        if user and user.get_password(password):
         # These prints to the page
-            flash(f"{user.first_name} You are sucessfully logged in!", category="success")
-            return redirect(url_for("index"))
+            flash(f"{user.first_name}, you are successfully logged in!", "success")
+            return redirect("/index")
         else:
-            flash("Sorry, something went wrong", category="danger")
-    return render_template("login.html", title="Login", form=form, login=True)
+            flash("Sorry, something went wrong.","danger")
+    return render_template("login.html", title="Login", form=form, login=True )
 
-@app.route("/register", methods=["POST", "GET"])
-def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        user_id  = User.objects.count()
-        user_id  += 1
-        email = form.email.data
-        password = form.password.data
-        first_name = form.first_name.data
-        last_name = form.last_name.data
 
-        # Creates the model User to be store to db
-        new_user = User(user_id=user_id, email=email, first_name=first_name, last_name=last_name)
-        new_user.set_password(password)
-        new_user.save()
-        flash("You are successfully registered!", category="success")
-        return redirect(url_for("index"))
-    return render_template("register.html", title="Register", form=form, register=True)
-
-@app.route("/courses")
+@app.route("/courses/")
 # "/base_pattern/<variable>"
 # use <variable> as user want to change urls to display different links
 # and dont forget to use it in its corresponding html {{ variable }}
 # and pass this arg in the function definition
 @app.route("/courses/<term>")
-def courses(term="Summer 2022"):
+def courses(term=None):
+    if term is None:
+        term = "Summer"
     return render_template("courses.html", courseData=courseData, courses=True, term=term)
 
 
