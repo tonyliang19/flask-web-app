@@ -27,7 +27,7 @@ class User(db.Document):
     
 class Course(db.Document):
     # Assert every user id is unique
-    course_id   = db.StringField(max_length = 10, unique=True)
+    courseID   = db.StringField(max_length = 10, unique=True)
     # You could change the length to other
     title       = db.StringField(max_length=100)
     description = db.StringField(max_length=255)
@@ -38,6 +38,6 @@ class Course(db.Document):
 # Junction table, many-to-many relationships
 # that can combine information of two or more tables
 class Enrollment(db.Document):
-    user_id = db.IntField()
-    course_id = db.StringField(max_length=10)
+    user_id     = db.IntField()
+    courseID    = db.StringField(max_length=10)
     

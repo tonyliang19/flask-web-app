@@ -3,15 +3,7 @@
 from application import app, db
 from flask import render_template, request, json, Response, redirect, flash, url_for
 from application.forms import LoginForm, RegisterForm
-from application.models import User#, Course, Enrollment
-
-# Global data
-
-courseData= [{"courseID":"1","title":"DSCI 100","description":"Intro to Data Science","credits":3,"term":"Fall, Spring"}, 
-                {"courseID":"2","title":"STAT 201","description":"Intro to Statistical Inference in Data Science","credits":4,"term":"Spring"}, 
-                {"courseID":"3","title":"DSCI 310","description":"Reproducible Workflows in Data Science","credits":3,"term":"Fall"}, 
-                {"courseID":"4","title":"DSCI 320","description":"Data Visualization", "credits":3,"term":"Fall, Spring"}, 
-                {"courseID":"5","title":"CPSC 330","description":"Applied Machine Learning","credits":3,"term":"Fall"}]
+from application.models import User, Course, Enrollment
 
 
 # Making the route for home page
@@ -84,8 +76,11 @@ def login():
 @app.route("/courses/<term>")
 def courses(term=None):
     if term is None:
-        term = "Summer"
-    return render_template("courses.html", courseData=courseData, courses=True, term=term)
+        term = "Summer 2022"
+    
+    classes = Course.objects.order_by("+courseID")
+    
+    return render_template("courses.html", courseData=classes, courses=True, term=term)
 
 
 @app.route("/enrollment", methods=["GET","POST"])
