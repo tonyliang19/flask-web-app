@@ -1,10 +1,27 @@
 # This serves as file that stores every route to each sub link
 
-import re
-from application import app, db
-from flask import render_template, request, redirect, flash, url_for, session
+from application import app, api, db
+from flask import render_template, request, redirect, flash, url_for, session, jsonify
 from application.forms import LoginForm, RegisterForm
 from application.models import User, Course, Enrollment
+from flask_restx import Resource
+
+# API
+#################
+@api.route("/api", "/api/")
+class GetAndPost(Resource):
+    # Fetches all data
+    def get(self):
+        return jsonify(User.objects.all())
+
+@api.route("/api/<idx>")
+class GetUpdateDelete(Resource):
+    # Fetches all data
+    def get(self, idx):
+        return jsonify(User.objects(user_id=idx))
+
+
+#################
 
 
 # Making the route for home page
