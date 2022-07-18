@@ -2,11 +2,11 @@
 
 from application import app, api, db
 from flask import render_template, request, redirect, flash, url_for, session, jsonify
-from application.course_list import course_list
 from application.forms import LoginForm, RegisterForm
+from application.course_list import course_list
 from application.models import User, Course, Enrollment
 from flask_restx import Resource
-from application.course_list import course_list
+
 
 # API
 #################
@@ -164,7 +164,7 @@ def enrollment():
     
     course_list = course_list()
     return render_template("enrollment.html", enrollment=True,  title="Enrollment",
-    classes=classes)
+    classes=course_list)
 
 # route for user
 @app.route("/user")
