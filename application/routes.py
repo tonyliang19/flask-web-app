@@ -91,21 +91,22 @@ def enrollment():
     # term = request.args.get("term")
     
     # For POST request.form.get
-    id = request.form.get("courseID")
-    title = request.form.get("title")
-    term = request.form.get("term")
-    return render_template("enrollment.html", enrollment=True, data={"id":id, "title":title, "term":term})
-
-@app.route("/api")
-@app.route("/api/<idx>")
-def api(idx=None):
-    # If no index provided, returns all data instead
-    if(idx == None):
-        jdata = courseData
-    else:
-        jdata = courseData[int(idx)]
-
-    return Response(json.dumps(jdata), mimetype="application/json")
+    #id = request.form.get("courseID")
+    #title = request.form.get("title")
+    
+    courseID = request.form.get("courseID")
+    courseTitle = request.form.get("title")
+    user_id = 1
+    if courseID:
+        if Enrollment.objects(user_id=user_id, courseID=courseID):
+            flash(f"Oops! You are already registered in this course {courseTitle}!", "danger")
+            return redirect(url_for("courses"))
+        else:
+            Enrollment(user_id=user_id, courseID=courseID).save()
+            flash(f"You are enrolled in {courseTitle}!", "success")
+    classes = None
+    return render_template("enrollment.html", enrollment=True,  title="Enrollment",
+    classes=classes)
 
 # route for user
 @app.route("/user")
@@ -113,9 +114,18 @@ def user():
     # .save() requires in order to be properly saved
     # User(user_id=1, first_name="Tony", last_name="Liang", email="chunqingliang@gmail.com", 
     # password="1234").save()
-    # User(user_id=2, first_name="Stella", last_name="Xu", email="jinghanx.0565@gmail.com",
-    # password="1234").save()
 
     # Get variable back from the db to template
     users = User.objects.all()
     return render_template("user.html", users=users)
+
+# @app.route("/api")
+# @app.route("/api/<idx>")
+# def api(idx=None):
+#     # If no index provided, returns all data instead
+#     if(idx == None):
+#         jdata = courseData
+#     else:
+#         jdata = courseData[int(idx)]
+
+#     return Response(json.dumps(jdata), mimetype="application/json")
