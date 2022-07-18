@@ -2,15 +2,17 @@
 
 from application import app, api, db
 from flask import render_template, request, redirect, flash, url_for, session, jsonify
+from application.course_list import course_list
 from application.forms import LoginForm, RegisterForm
 from application.models import User, Course, Enrollment
 from flask_restx import Resource
+from application.course_list import course_list
 
 # API
 #################
 @api.route("/api", "/api/")
 class GetAndPost(Resource):
-    # Fetches all data
+    # GET all, fetches all data
     def get(self):
         return jsonify(User.objects.all())
 
@@ -25,9 +27,19 @@ class GetAndPost(Resource):
 
 @api.route("/api/<idx>")
 class GetUpdateDelete(Resource):
-    # Fetches single data by id /<id>
+    # GET one, fetches single data by id /<id>
     def get(self, idx):
         return jsonify(User.objects(user_id=idx))
+    # PUT
+    def put(self, idx):
+        data = api.payload
+        User.objects(user_id=idx).update(**data)
+        return jsonify(User.objects(user_id=idx))
+    
+    # DELETE
+    def delete(self, idx):
+        User.objects(user_id=idx).delete()
+        return jsonify("User is deleted!")
 
 
 #################
@@ -149,42 +161,8 @@ def enrollment():
         else:
             Enrollment(user_id=user_id, courseID=courseID).save()
             flash(f"You are enrolled in {courseTitle}!", "success")
-    classes = list(User.objects.aggregate(*[
-    {
-        '$lookup': {
-            'from': 'enrollment', 
-            'localField': 'user_id', 
-            'foreignField': 'user_id', 
-            'as': 'r1'
-        }
-    }, {
-        '$unwind': {
-            'path': '$r1', 
-            'includeArrayIndex': 'r1_id', 
-            'preserveNullAndEmptyArrays': False
-        }
-    }, {
-        '$lookup': {
-            'from': 'course', 
-            'localField': 'r1.courseID', 
-            'foreignField': 'courseID', 
-            'as': 'r2'
-        }
-    }, {
-        '$unwind': {
-            'path': '$r2', 
-            'preserveNullAndEmptyArrays': False
-        }
-    }, {
-        '$match': {
-            'user_id': user_id
-        }
-    }, {
-        '$sort': {
-            'courseID': 1
-        }
-    }
-]))
+    
+    course_list = course_list()
     return render_template("enrollment.html", enrollment=True,  title="Enrollment",
     classes=classes)
 
@@ -199,13 +177,3 @@ def user():
     users = User.objects.all()
     return render_template("user.html", users=users)
 
-# @app.route("/api")
-# @app.route("/api/<idx>")
-# def api(idx=None):
-#     # If no index provided, returns all data instead
-#     if(idx == None):
-#         jdata = courseData
-#     else:
-#         jdata = courseData[int(idx)]
-
-#     return Response(json.dumps(jdata), mimetype="application/json")
