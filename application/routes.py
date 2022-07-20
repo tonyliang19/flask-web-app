@@ -1,5 +1,6 @@
 # This serves as file that stores every route to each sub link
 
+from unicodedata import category
 from application import app, api, db
 from flask import render_template, request, redirect, flash, url_for, session, jsonify
 from application.forms import LoginForm, RegisterForm
@@ -149,6 +150,7 @@ def enrollment():
     
     # if not signed in redirect user to login page
     if not session.get("username"):
+        flash("You're not signed in yet, please log in first!", category="danger")
         return redirect(url_for("login"))
 
     courseID = request.form.get("courseID")
@@ -162,10 +164,14 @@ def enrollment():
             Enrollment(user_id=user_id, courseID=courseID).save()
             flash(f"You are enrolled in {courseTitle}!", "success")
     
-    course_list = course_list()
+    courses = course_list(user_id)
     return render_template("enrollment.html", enrollment=True,  title="Enrollment",
-    classes=course_list)
+    classes=courses)
 
+# route for profile after login
+@app.route("/profile")
+def profile():
+    return render_template("profile.html", profile=True )
 # route for user
 @app.route("/user")
 def user():

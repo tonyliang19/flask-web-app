@@ -1,6 +1,6 @@
 from application.models import User
 
-def course_list():
+def course_list(user_id):
     classes = list(User.objects.aggregate(*[
     {
         '$lookup': {

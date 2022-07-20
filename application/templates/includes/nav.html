@@ -21,6 +21,12 @@
             {% else %}
             <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
             {% endif %}
+
+            {% if session["username"] %}
+            <li class="nav-item"><a href="{{ url_for('profile') }}" class="nav-link {% if 
+                profile %}active{% endif %}">Profile</a></li>
+            
+            {% endif%}
         </ul>
     </nav>
     <hr style="clear:both">
